@@ -1,4 +1,4 @@
-module amplify/init
+module amplify/main
 
 go 1.18
 
