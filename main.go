@@ -1,5 +1,10 @@
 package main
 
+// time.Sleep(time.Second)
+// c.Send("\033[B") // down arrow
+// time.Sleep(time.Second)
+// c.Send("\033[A") // up arrow
+
 import (
 	"log"
 	"os"
@@ -34,10 +39,6 @@ func amplifyInit() {
 	c.Send("\r")
 	time.Sleep(time.Second)
 	c.Send("Y\r")
-	// time.Sleep(time.Second)
-	// c.Send("\033[B") // down arrow
-	// time.Sleep(time.Second)
-	// c.Send("\033[A") // up arrow
 	time.Sleep(time.Second)
 	c.SendLine("\r")
 	time.Sleep(time.Second)
@@ -51,7 +52,7 @@ func amplifyInit() {
 	}
 }
 
-func amplifyAddApi() {
+func amplifyAddApiDSAutoMerge() {
 	c, err := expect.NewConsole(expect.WithStdout(os.Stdout))
 	if err != nil {
 		log.Fatal(err)
@@ -75,17 +76,21 @@ func amplifyAddApi() {
 	time.Sleep(time.Second)
 	c.Send("\r")
 	time.Sleep(time.Second)
-	c.Send("Y\r")
-	// time.Sleep(time.Second)
-	// c.Send("\033[B") // down arrow
-	// time.Sleep(time.Second)
-	// c.Send("\033[A") // up arrow
-	// time.Sleep(time.Second)
-	// c.SendLine("\r")
-	// time.Sleep(time.Second)
-	// c.SendLine("\r")
-	// time.Sleep(time.Second)
-	// c.Send("Y\r")
+	c.Send("\033[A") // up arrow - Conflict detection
+	time.Sleep(time.Second)
+	c.SendLine("\r")
+	time.Sleep(time.Second)
+	c.Send("Y\r") // Enable conflict detection? Yes
+	time.Sleep(time.Second)
+	c.SendLine("\r") // Auto Merge
+	time.Sleep(time.Second)
+	c.SendLine("\r") // Continue
+	time.Sleep(time.Second)
+	c.Send("\033[B") // down arrow - One-to-many relationship (e.g., “Blogs” with “Posts” and “Comments”)
+	time.Sleep(time.Second)
+	c.SendLine("\r") // Continue
+	time.Sleep(time.Second)
+	c.Send("N\r")
 
 	err = cmd.Wait()
 	if err != nil {
@@ -94,6 +99,9 @@ func amplifyAddApi() {
 }
 
 func main() {
-	//amplifyInit()
-	amplifyAddApi()
+	if _, err := os.Stat("amplify/team-provider-info.json"); err == nil || os.IsExist(err) {
+		amplifyAddApiDSAutoMerge()
+	} else {
+		amplifyInit()
+	}
 }
