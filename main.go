@@ -6,6 +6,7 @@ package main
 // c.Send("\033[A") // up arrow
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"os/exec"
@@ -13,6 +14,45 @@ import (
 
 	expect "github.com/Netflix/go-expect"
 )
+
+func initCreateReactApp() {
+	t := time.Now()
+	dateStr, err := fmt.Printf("%d%02d%02d%02d%02d",
+		t.Year(), t.Month(), t.Day(),
+		t.Hour(), t.Minute())
+	if err != nil {
+		log.Fatal(err)
+	}
+	projectName := fmt.Sprintf("%v-amplify-cli-cra", dateStr)
+	fmt.Println(projectName)
+
+	c, err := expect.NewConsole(expect.WithStdout(os.Stdout))
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer c.Close()
+
+	cmd := exec.Command("npx", "create-react-app@latest", projectName)
+	cmd.Stdin = c.Tty()
+	cmd.Stdout = c.Tty()
+	cmd.Stderr = c.Tty()
+
+	go func() {
+		c.ExpectEOF()
+	}()
+
+	err = cmd.Start()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	exec.Command("cd", projectName)
+
+	err = cmd.Wait()
+	if err != nil {
+		log.Fatal(err)
+	}
+}
 
 func amplifyInit() {
 	c, err := expect.NewConsole(expect.WithStdout(os.Stdout))
