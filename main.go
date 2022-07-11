@@ -23,8 +23,11 @@ func initCreateReactApp() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	projectName := fmt.Sprintf("%v-amplify-cli-cra", dateStr)
-	fmt.Println(projectName)
+	projectName := fmt.Sprint(dateStr, "-amplify-cli-cra")
+	// Help here as I'm can't get the date formatted the right way in the projectName
+	// What I want is YYYY-MM-DD HH:MM without any formatting, so YYYYMMDDHHMM
+	fmt.Println(dateStr)     // 20220710230412
+	fmt.Println(projectName) // 12-amplify-cli-cra
 
 	c, err := expect.NewConsole(expect.WithStdout(os.Stdout))
 	if err != nil {
@@ -45,7 +48,10 @@ func initCreateReactApp() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	time.Sleep(time.Second)
+	c.Send("\r")
 
+	time.Sleep(time.Second)
 	exec.Command("cd", projectName)
 
 	err = cmd.Wait()
@@ -142,6 +148,7 @@ func main() {
 	if _, err := os.Stat("amplify/team-provider-info.json"); err == nil || os.IsExist(err) {
 		amplifyAddApiDSAutoMerge()
 	} else {
+		initCreateReactApp()
 		amplifyInit()
 	}
 }
