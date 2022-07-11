@@ -21,10 +21,7 @@ func initCreateReactApp() {
 		t.Year(), t.Month(), t.Day(),
 		t.Hour(), t.Minute())
 	projectName := dateStr + "-amplify-cli-cra"
-	// Help here as I'm can't get the date formatted the right way in the projectName
-	// What I want is YYYY-MM-DD HH:MM without any formatting, so YYYYMMDDHHMM
-	fmt.Println(dateStr)     // 20220710230412
-	fmt.Println(projectName) // 12-amplify-cli-cra
+	fmt.Println(projectName)
 
 	c, err := expect.NewConsole(expect.WithStdout(os.Stdout))
 	if err != nil {
@@ -142,11 +139,10 @@ func amplifyAddApiDSAutoMerge() {
 }
 
 func main() {
-	initCreateReactApp()
-	// if _, err := os.Stat("amplify/team-provider-info.json"); err == nil || os.IsExist(err) {
-	// 	amplifyAddApiDSAutoMerge()
-	// } else {
-	// 	initCreateReactApp()
-	// 	amplifyInit()
-	// }
+	if _, err := os.Stat("amplify/team-provider-info.json"); err == nil || os.IsExist(err) {
+		amplifyAddApiDSAutoMerge()
+	} else {
+		initCreateReactApp()
+		amplifyInit()
+	}
 }
